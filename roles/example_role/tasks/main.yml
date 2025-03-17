@@ -53,15 +53,8 @@
       delay: 5
 
 - name: install skupper cli
-  when: ocp4_workload_eap_camelq_lab_skupper_cli_install | bool
   become: true
   block:
-    # - name: install skupper cli
-    #   ansible.builtin.include_role:
-    #     name: skupper.network.skupper_cli_install
-    #   vars:
-    #     skupper_cli:
-    #       force: "True"
     - name: install skupper cli
       become_user: "{{ student_name }}"
       ansible.builtin.shell: >-
@@ -84,6 +77,7 @@
     - name: switch skupper platform
       become_user: "{{ student_name }}"
       ansible.builtin.command: "/home/{{ student_name }}/.local/bin/skupper switch"
+      
 - name: start postgresql with podman
   become: true
   become_user: "{{ student_name }}"
