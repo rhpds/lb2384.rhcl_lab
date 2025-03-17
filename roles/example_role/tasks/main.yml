@@ -2,3 +2,15 @@
 - name: Print GUID
   ansible.builtin.debug:
     msg: "GUID: {{ example_role_guid }}"
+
+- name: set up podman for the user
+  become: true
+  block:
+    - name: copy setup_podman_user_service script to bastion
+      ansible.builtin.copy:
+        src: setup_podman_user_service
+        dest: "/usr/bin/setup_podman_user_service"
+        owner: root
+        group: root
+        mode: 0775
+
