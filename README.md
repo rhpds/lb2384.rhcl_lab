@@ -1,3 +1,2 @@
-# Ansible Collection - lb1153.could_you_be_a_hacker
-
-Documentation for the collection.
+# Ansible Collection for LB2384
+Agv: https://github.com/rhpds/agnosticv/tree/master/summit-2025/lb2384-rhsi-rhel
