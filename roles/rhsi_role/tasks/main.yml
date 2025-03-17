@@ -1,8 +1,4 @@
 ---
-- name: Print GUID
-  ansible.builtin.debug:
-    msg: "GUID: {{ example_role_guid }}"
-
 - name: set up podman for the user
   become: true
   block:
@@ -31,7 +27,7 @@
     - name: start soap app service with podman
       containers.podman.podman_container:
         name: container
-        image: "{{ ocp4_workload_eap_camelq_lab_soap_app_image }}"
+        image: "{{ workload_app_image }}"
         detach: true
         ports:
           - 8080:8080
@@ -81,14 +77,14 @@
     - name: start postgresql with podman
       containers.podman.podman_container:
         name: postgresql
-        image: "{{ ocp4_workload_eap_camelq_lab_postgresql_image }}"
+        image: "{{ workload_postgresql_image }}"
         detach: true
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: "{{ ocp4_workload_eap_camelq_lab_postgresql_user }}"
-          POSTGRES_PASSWORD: "{{ ocp4_workload_eap_camelq_lab_postgresql_password }}"
-          POSTGRES_DB: "{{ ocp4_workload_eap_camelq_lab_postgresql_db }}"
+          POSTGRES_USER: "{{ workload_postgresql_user }}"
+          POSTGRES_PASSWORD: "{{ workload_postgresql_password }}"
+          POSTGRES_DB: "{{ workload_postgresql_db }}"
     - name: verify postgresql container is running
       containers.podman.podman_container_info:
         name: postgresql
