@@ -64,10 +64,6 @@
         path: /etc/profile
         marker: "# skupper platform variabler"
         block: "export SKUPPER_PLATFORM=podman"
-    - name: reboot required for podman
-      ansible.builtin.reboot:
-        connect_timeout: 300
-        msg: "Rebooting now.."
     - name: loginctl enable-linger
       ansible.builtin.command:
         argv:
