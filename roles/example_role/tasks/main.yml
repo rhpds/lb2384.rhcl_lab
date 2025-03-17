@@ -1,0 +1,4 @@
+---
+- name: Print GUID
+  ansible.builtin.debug:
+    msg: "GUID: {{ example_role_guid }}"

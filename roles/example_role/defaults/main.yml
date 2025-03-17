@@ -1,0 +1,2 @@
+---
+example_role_guid: "{{ guid | default('testguid') }}"
