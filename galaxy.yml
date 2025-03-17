@@ -2,10 +2,10 @@
 # The namespace of the collection. This can be a company/brand/organization or product namespace under which all
 # content lives. May only contain alphanumeric lowercase characters and underscores. Namespaces cannot start with
 # underscores or numbers and cannot contain consecutive underscores
-namespace: lb2961
+namespace: lb1153
 
 # The name of the collection. Has the same character restrictions as 'namespace'
-name: ai_driven_aap
+name: could_you_be_a_hacker
 
 # The version of the collection. Must be compatible with semantic versioning
 version: 1.0.0
