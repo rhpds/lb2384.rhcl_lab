@@ -20,33 +20,6 @@
           export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
           /usr/bin/setup_podman_user_service
 
-- name: start soap app service with podman
-  become: true
-  become_user: "{{ student_name }}"
-  block:
-    - name: start soap app service with podman
-      containers.podman.podman_container:
-        name: container
-        image: "{{ workload_app_image }}"
-        detach: true
-        ports:
-          - 8080:8080
-    - name: verify soap app with a test request
-      ansible.builtin.uri:
-        url: http://localhost:8080/services/s1
-        method: GET
-        body: |
-          <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-            <soap:Body>
-              <ns2:SubscriberRequest xmlns:ns2="http://www.example.org/s1/">
-                <Id>dummy</Id>
-              </ns2:SubscriberRequest>
-            </soap:Body>
-          </soap:Envelope>
-      register: this
-      until: this.status == 200
-      retries: 3
-      delay: 5
 
 - name: install skupper cli
   become: true
@@ -54,7 +27,7 @@
     - name: install skupper cli
       become_user: "{{ student_name }}"
       ansible.builtin.shell: >-
-        /usr/bin/curl https://raw.githubusercontent.com/RedHat-Middleware-Workshops/service-interconnect-lab-instructions/main/install.sh | sh
+        /usr/bin/curl https://skupper.io/install.sh | sh -s -- --version 2.0.0-preview-2
     - name: export skupper bash variable
       ansible.builtin.blockinfile:
         path: /etc/profile
@@ -66,34 +39,38 @@
           - loginctl
           - enable-linger
           - "{{ student_name }}"
-    - name: switch skupper platform
-      become_user: "{{ student_name }}"
-      ansible.builtin.command: "/home/{{ student_name }}/.local/bin/skupper switch"
+    # - name: switch skupper platform
+    #   become_user: "{{ student_name }}"
+    #   ansible.builtin.command: "/home/{{ student_name }}/.local/bin/skupper switch"
       
-- name: start postgresql with podman
-  become: true
-  become_user: "{{ student_name }}"
-  block:
-    - name: start postgresql with podman
+    - name: Start MySQL container with Podman if not running
+      become: true
+      become_user: "{{ student_name }}"
       containers.podman.podman_container:
-        name: postgresql
-        image: "{{ workload_postgresql_image }}"
-        detach: true
+        name: "{{workload_container_name}}"
+        image: "{{workload_app_image}}"
+        state: started
+        restart_policy: always
         ports:
-          - 5432:5432
+          - "3306:3306"
         env:
-          POSTGRES_USER: "{{ workload_postgresql_user }}"
-          POSTGRES_PASSWORD: "{{ workload_postgresql_password }}"
-          POSTGRES_DB: "{{ workload_postgresql_db }}"
-    - name: verify postgresql container is running
+          MYSQL_ROOT_PASSWORD: "{{workload_mysql_password}}"
+        command: "--default-authentication-plugin=mysql_native_password"
+      register: container_result
+      failed_when: container_result.failed
+      # ignore_errors: yes  # Ignore errors to proceed with container info check
+
+
+    - name: Wait for the container to start (optional)
+      wait_for:
+        host: localhost
+        port: 3306
+        delay: 5
+        timeout: 30
+
+    - name: Verify travels-mysqldb container is running
       containers.podman.podman_container_info:
-        name: postgresql
-      register: this
+        name: travels-mysqldb
+      register: container_info
       retries: 3
       delay: 5
-    - name: Print return information from the previous task
-      assert:
-        that:
-          - "'running' in this.containers.0.State.Status"
-        fail_msg: postgresdb not running
-        success_msg: postgresql is running

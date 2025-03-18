@@ -1,7 +1,5 @@
 ---
 student_name: lab-user
-workload_app_image: quay.io/hayesphilip/rh1-soap-app:latest
-workload_postgresql_image: docker.io/library/postgres:14
-workload_postgresql_user: postgresUser
-workload_postgresql_password: postgresPW
-workload_postgresql_db: postgresDB
+workload_app_image: quay.io/kiali/demo_travels_mysqldb:v1
+workload_container_name: travels-mysqldb
+workload_mysql_password: password
